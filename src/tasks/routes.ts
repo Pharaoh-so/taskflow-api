@@ -6,19 +6,24 @@
 import { Router } from "express";
 import type { Request, Response } from "express";
 import { requireAuth } from "../middleware/authenticate.js";
-import { createTaskSchema, updateTaskSchema, createCommentSchema, paginationSchema } from "../shared/validators.js";
-import { ValidationError, AuthorizationError } from "../shared/errors.js";
+import { AuthorizationError, ValidationError } from "../shared/errors.js";
+import type { TaskStatus } from "../shared/types.js";
 import {
+	createCommentSchema,
+	createTaskSchema,
+	paginationSchema,
+	updateTaskSchema,
+} from "../shared/validators.js";
+import {
+	addComment,
 	createTask,
+	deleteTask,
 	getTaskById,
+	getTaskStats,
+	listComments,
 	listTasks,
 	updateTask,
-	deleteTask,
-	addComment,
-	listComments,
-	getTaskStats,
 } from "./repository.js";
-import type { TaskStatus } from "../shared/types.js";
 
 /** Create the tasks router. */
 export function createTasksRouter(): Router {
@@ -30,14 +35,20 @@ export function createTasksRouter(): Router {
 	router.post("/", async (req: Request, res: Response) => {
 		const parsed = createTaskSchema.safeParse(req.body);
 		if (!parsed.success) {
-			throw new ValidationError("Invalid task data", { issues: parsed.error.issues });
+			throw new ValidationError("Invalid task data", {
+				issues: parsed.error.issues,
+			});
 		}
 
 		if (!req.user!.team_id) {
 			throw new AuthorizationError("Must belong to a team to create tasks");
 		}
 
-		const task = await createTask(parsed.data, req.user!.sub, req.user!.team_id);
+		const task = await createTask(
+			parsed.data,
+			req.user!.sub,
+			req.user!.team_id,
+		);
 		res.status(201).json({ data: task });
 	});
 
@@ -78,7 +89,9 @@ export function createTasksRouter(): Router {
 	router.patch("/:id", async (req: Request, res: Response) => {
 		const parsed = updateTaskSchema.safeParse(req.body);
 		if (!parsed.success) {
-			throw new ValidationError("Invalid update data", { issues: parsed.error.issues });
+			throw new ValidationError("Invalid update data", {
+				issues: parsed.error.issues,
+			});
 		}
 		const task = await updateTask(req.params.id, parsed.data);
 		res.json({ data: task });
@@ -96,7 +109,11 @@ export function createTasksRouter(): Router {
 		if (!parsed.success) {
 			throw new ValidationError("Invalid comment data");
 		}
-		const comment = await addComment(req.params.id, req.user!.sub, parsed.data.body);
+		const comment = await addComment(
+			req.params.id,
+			req.user!.sub,
+			parsed.data.body,
+		);
 		res.status(201).json({ data: comment });
 	});
 

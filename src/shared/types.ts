@@ -13,7 +13,13 @@ export type Timestamp = string;
 export type TaskPriority = "critical" | "high" | "medium" | "low";
 
 /** Lifecycle states for a task. */
-export type TaskStatus = "backlog" | "todo" | "in_progress" | "review" | "done" | "archived";
+export type TaskStatus =
+	| "backlog"
+	| "todo"
+	| "in_progress"
+	| "review"
+	| "done"
+	| "archived";
 
 /** Roles a user can hold within a team. */
 export type UserRole = "owner" | "admin" | "member" | "viewer";

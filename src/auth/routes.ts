@@ -5,12 +5,20 @@
 
 import { Router } from "express";
 import type { Request, Response } from "express";
-import { loginSchema, registerUserSchema } from "../shared/validators.js";
-import { createUser, getUserByEmail, updateLastLogin } from "../users/repository.js";
-import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "./jwt.js";
-import { comparePassword, hashPassword } from "./passwords.js";
-import { ValidationError, AuthenticationError } from "../shared/errors.js";
+import { AuthenticationError, ValidationError } from "../shared/errors.js";
 import { logger } from "../shared/logger.js";
+import { loginSchema, registerUserSchema } from "../shared/validators.js";
+import {
+	createUser,
+	getUserByEmail,
+	updateLastLogin,
+} from "../users/repository.js";
+import {
+	generateAccessToken,
+	generateRefreshToken,
+	verifyRefreshToken,
+} from "./jwt.js";
+import { comparePassword, hashPassword } from "./passwords.js";
 
 /** Create the auth router with register/login/refresh endpoints. */
 export function createAuthRouter(): Router {
@@ -46,7 +54,12 @@ export function createAuthRouter(): Router {
 		logger.info("User registered", { userId: user.id, email });
 
 		res.status(201).json({
-			user: { id: user.id, email: user.email, name: user.name, role: user.role },
+			user: {
+				id: user.id,
+				email: user.email,
+				name: user.name,
+				role: user.role,
+			},
 			access_token: accessToken,
 			refresh_token: refreshToken,
 		});
@@ -83,7 +96,12 @@ export function createAuthRouter(): Router {
 		logger.info("User logged in", { userId: user.id });
 
 		res.json({
-			user: { id: user.id, email: user.email, name: user.name, role: user.role },
+			user: {
+				id: user.id,
+				email: user.email,
+				name: user.name,
+				role: user.role,
+			},
 			access_token: accessToken,
 			refresh_token: refreshToken,
 		});

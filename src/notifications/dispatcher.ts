@@ -3,14 +3,19 @@
  * Routes task events to the appropriate delivery channels (email, webhook, in-app).
  */
 
-import type { Task, EntityId, Notification } from "../shared/types.js";
 import { query, queryOne } from "../shared/database.js";
+import { logger } from "../shared/logger.js";
+import type { EntityId, Notification, Task } from "../shared/types.js";
 import { sendEmail } from "./email.js";
 import { deliverWebhook } from "./webhooks.js";
-import { logger } from "../shared/logger.js";
 
 /** Event types that trigger notifications. */
-export type TaskEvent = "assigned" | "status_changed" | "commented" | "due_soon" | "overdue";
+export type TaskEvent =
+	| "assigned"
+	| "status_changed"
+	| "commented"
+	| "due_soon"
+	| "overdue";
 
 /** Create an in-app notification record. */
 async function createInAppNotification(
@@ -27,7 +32,10 @@ async function createInAppNotification(
 }
 
 /** Build a human-readable notification message for a task event. */
-function buildMessage(task: Task, event: TaskEvent): { subject: string; body: string } {
+function buildMessage(
+	task: Task,
+	event: TaskEvent,
+): { subject: string; body: string } {
 	switch (event) {
 		case "assigned":
 			return {
@@ -82,7 +90,10 @@ async function getNotificationRecipients(
  * Dispatches to all configured channels (in-app, email, webhook).
  * Failures are logged but don't throw — notifications are best-effort.
  */
-export async function sendTaskNotification(task: Task, event: TaskEvent): Promise<void> {
+export async function sendTaskNotification(
+	task: Task,
+	event: TaskEvent,
+): Promise<void> {
 	try {
 		const recipients = await getNotificationRecipients(task, event);
 		const { subject, body } = buildMessage(task, event);

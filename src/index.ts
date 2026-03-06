@@ -4,16 +4,17 @@
  */
 
 import express from "express";
-import { initDatabase, closeDatabase } from "./shared/database.js";
-import { logger } from "./shared/logger.js";
-import { errorHandler } from "./middleware/error-handler.js";
 import { createAuthRouter } from "./auth/routes.js";
-import { createUsersRouter } from "./users/routes.js";
-import { createTasksRouter } from "./tasks/routes.js";
+import { errorHandler } from "./middleware/error-handler.js";
 import { createNotificationsRouter } from "./notifications/routes.js";
+import { closeDatabase, initDatabase } from "./shared/database.js";
+import { logger } from "./shared/logger.js";
+import { createTasksRouter } from "./tasks/routes.js";
+import { createUsersRouter } from "./users/routes.js";
 
 const PORT = Number(process.env.PORT ?? 3000);
-const DATABASE_URL = process.env.DATABASE_URL ?? "postgresql://localhost:5432/taskflow";
+const DATABASE_URL =
+	process.env.DATABASE_URL ?? "postgresql://localhost:5432/taskflow";
 
 /** Create and configure the Express application. */
 function createApp(): express.Application {

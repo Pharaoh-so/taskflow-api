@@ -5,8 +5,8 @@
 
 import crypto from "node:crypto";
 import { query } from "../shared/database.js";
-import type { EntityId, WebhookSubscription } from "../shared/types.js";
 import { logger } from "../shared/logger.js";
+import type { EntityId, WebhookSubscription } from "../shared/types.js";
 
 /** Sign a webhook payload with HMAC-SHA256. */
 function signPayload(payload: string, secret: string): string {

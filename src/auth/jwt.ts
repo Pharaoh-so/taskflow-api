@@ -53,7 +53,9 @@ export function verifyAccessToken(token: string): TokenPayload | null {
 /** Verify a refresh token. Returns the user ID or null. */
 export function verifyRefreshToken(token: string): EntityId | null {
 	try {
-		const decoded = jwt.verify(token, getSecret(), { issuer: "taskflow-api" }) as {
+		const decoded = jwt.verify(token, getSecret(), {
+			issuer: "taskflow-api",
+		}) as {
 			sub: EntityId;
 			type: string;
 		};

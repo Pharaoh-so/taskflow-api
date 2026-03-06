@@ -3,8 +3,8 @@
  * Extracts and validates Bearer tokens, attaching user context to requests.
  */
 
-import type { Request, Response, NextFunction } from "express";
-import { verifyAccessToken, type TokenPayload } from "../auth/jwt.js";
+import type { NextFunction, Request, Response } from "express";
+import { type TokenPayload, verifyAccessToken } from "../auth/jwt.js";
 import { AuthenticationError, AuthorizationError } from "../shared/errors.js";
 import type { UserRole } from "../shared/types.js";
 
@@ -25,7 +25,11 @@ function extractToken(req: Request): string | null {
 }
 
 /** Require a valid JWT on the request. Rejects with 401 if missing/invalid. */
-export function requireAuth(req: Request, _res: Response, next: NextFunction): void {
+export function requireAuth(
+	req: Request,
+	_res: Response,
+	next: NextFunction,
+): void {
 	const token = extractToken(req);
 	if (!token) {
 		throw new AuthenticationError("Bearer token required");

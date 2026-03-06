@@ -13,6 +13,9 @@ export async function hashPassword(plaintext: string): Promise<string> {
 }
 
 /** Compare a plaintext password against a stored hash. */
-export async function comparePassword(plaintext: string, hash: string): Promise<boolean> {
+export async function comparePassword(
+	plaintext: string,
+	hash: string,
+): Promise<boolean> {
 	return bcrypt.compare(plaintext, hash);
 }

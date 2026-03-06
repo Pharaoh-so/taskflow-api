@@ -3,10 +3,21 @@
  * Handles CRUD, status transitions, and assignment logic.
  */
 
-import { query, queryOne, queryMaybe, withTransaction } from "../shared/database.js";
-import type { Task, TaskComment, EntityId, PaginatedResponse, TaskStatus } from "../shared/types.js";
-import { NotFoundError, ValidationError } from "../shared/errors.js";
 import { sendTaskNotification } from "../notifications/dispatcher.js";
+import {
+	query,
+	queryMaybe,
+	queryOne,
+	withTransaction,
+} from "../shared/database.js";
+import { NotFoundError, ValidationError } from "../shared/errors.js";
+import type {
+	EntityId,
+	PaginatedResponse,
+	Task,
+	TaskComment,
+	TaskStatus,
+} from "../shared/types.js";
 
 /** Valid status transitions — enforces a linear workflow. */
 const VALID_TRANSITIONS: Record<TaskStatus, TaskStatus[]> = {
@@ -59,7 +70,9 @@ export async function createTask(
 
 /** Get a task by ID. Throws NotFoundError if not found. */
 export async function getTaskById(id: EntityId): Promise<Task> {
-	const task = await queryMaybe<Task>("SELECT * FROM tasks WHERE id = $1", [id]);
+	const task = await queryMaybe<Task>("SELECT * FROM tasks WHERE id = $1", [
+		id,
+	]);
 	if (!task) throw new NotFoundError("Task", id);
 	return task;
 }
@@ -150,8 +163,15 @@ export async function updateTask(
 		let paramIndex = 1;
 
 		const allowedFields = [
-			"title", "description", "status", "priority",
-			"assignee_id", "due_date", "tags", "estimated_hours", "actual_hours",
+			"title",
+			"description",
+			"status",
+			"priority",
+			"assignee_id",
+			"due_date",
+			"tags",
+			"estimated_hours",
+			"actual_hours",
 		];
 
 		for (const key of allowedFields) {
@@ -193,7 +213,9 @@ export async function updateTask(
 export async function deleteTask(id: EntityId): Promise<void> {
 	const task = await getTaskById(id);
 	if (!["backlog", "archived"].includes(task.status)) {
-		throw new ValidationError("Can only delete tasks in 'backlog' or 'archived' status");
+		throw new ValidationError(
+			"Can only delete tasks in 'backlog' or 'archived' status",
+		);
 	}
 	await query("DELETE FROM tasks WHERE id = $1", [id]);
 }
@@ -221,14 +243,21 @@ export async function listComments(taskId: EntityId): Promise<TaskComment[]> {
 }
 
 /** Get task counts grouped by status for a team dashboard. */
-export async function getTaskStats(teamId: EntityId): Promise<Record<TaskStatus, number>> {
+export async function getTaskStats(
+	teamId: EntityId,
+): Promise<Record<TaskStatus, number>> {
 	const rows = await query<{ status: TaskStatus; count: string }>(
 		"SELECT status, COUNT(*) as count FROM tasks WHERE team_id = $1 GROUP BY status",
 		[teamId],
 	);
 
 	const stats: Record<string, number> = {
-		backlog: 0, todo: 0, in_progress: 0, review: 0, done: 0, archived: 0,
+		backlog: 0,
+		todo: 0,
+		in_progress: 0,
+		review: 0,
+		done: 0,
+		archived: 0,
 	};
 
 	for (const row of rows) {

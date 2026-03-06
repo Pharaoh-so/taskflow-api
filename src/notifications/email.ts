@@ -63,6 +63,8 @@ export async function sendBulkEmail(
 		recipients.map((to) => sendEmail(to, subject, body)),
 	);
 
-	const sent = results.filter((r) => r.status === "fulfilled" && r.value).length;
+	const sent = results.filter(
+		(r) => r.status === "fulfilled" && r.value,
+	).length;
 	return { sent, failed: recipients.length - sent };
 }

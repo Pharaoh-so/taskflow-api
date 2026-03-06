@@ -12,7 +12,10 @@ export const logger = winston.createLogger({
 	format: winston.format.combine(
 		winston.format.timestamp(),
 		isDev
-			? winston.format.combine(winston.format.colorize(), winston.format.simple())
+			? winston.format.combine(
+					winston.format.colorize(),
+					winston.format.simple(),
+				)
 			: winston.format.json(),
 	),
 	transports: [new winston.transports.Console()],

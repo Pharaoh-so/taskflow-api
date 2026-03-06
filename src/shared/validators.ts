@@ -35,7 +35,9 @@ export const createTaskSchema = z.object({
 
 /** Task update payload — all fields optional. */
 export const updateTaskSchema = createTaskSchema.partial().extend({
-	status: z.enum(["backlog", "todo", "in_progress", "review", "done", "archived"]).optional(),
+	status: z
+		.enum(["backlog", "todo", "in_progress", "review", "done", "archived"])
+		.optional(),
 	actual_hours: z.number().min(0).nullable().optional(),
 });
 

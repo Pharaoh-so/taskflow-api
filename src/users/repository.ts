@@ -3,9 +3,9 @@
  * All database operations for user CRUD and lookups.
  */
 
-import { query, queryOne, queryMaybe } from "../shared/database.js";
-import type { User, EntityId, PaginatedResponse } from "../shared/types.js";
+import { query, queryMaybe, queryOne } from "../shared/database.js";
 import { NotFoundError } from "../shared/errors.js";
+import type { EntityId, PaginatedResponse, User } from "../shared/types.js";
 
 /** Create a new user with default 'member' role. */
 export async function createUser(data: {
@@ -28,7 +28,9 @@ export async function getUserByEmail(email: string): Promise<User | null> {
 
 /** Find a user by ID. Throws NotFoundError if not found. */
 export async function getUserById(id: EntityId): Promise<User> {
-	const user = await queryMaybe<User>("SELECT * FROM users WHERE id = $1", [id]);
+	const user = await queryMaybe<User>("SELECT * FROM users WHERE id = $1", [
+		id,
+	]);
 	if (!user) throw new NotFoundError("User", id);
 	return user;
 }
@@ -49,7 +51,10 @@ export async function listUsers(
 			`SELECT * FROM users ${whereClause} ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
 			params,
 		),
-		query<{ count: string }>(`SELECT COUNT(*) as count FROM users ${whereClause}`, teamId ? [teamId] : []),
+		query<{ count: string }>(
+			`SELECT COUNT(*) as count FROM users ${whereClause}`,
+			teamId ? [teamId] : [],
+		),
 	]);
 
 	const total = Number.parseInt(countResult[0].count, 10);
@@ -97,6 +102,8 @@ export async function updateLastLogin(id: EntityId): Promise<void> {
 
 /** Delete a user by ID. */
 export async function deleteUser(id: EntityId): Promise<void> {
-	const result = await query("DELETE FROM users WHERE id = $1 RETURNING id", [id]);
+	const result = await query("DELETE FROM users WHERE id = $1 RETURNING id", [
+		id,
+	]);
 	if (result.length === 0) throw new NotFoundError("User", id);
 }

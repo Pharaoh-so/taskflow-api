@@ -7,7 +7,12 @@ import { Router } from "express";
 import type { Request, Response } from "express";
 import { requireAuth, requireRole } from "../middleware/authenticate.js";
 import { paginationSchema } from "../shared/validators.js";
-import { getUserById, listUsers, updateUser, deleteUser } from "./repository.js";
+import {
+	deleteUser,
+	getUserById,
+	listUsers,
+	updateUser,
+} from "./repository.js";
 
 /** Create the users router. */
 export function createUsersRouter(): Router {
@@ -42,7 +47,9 @@ export function createUsersRouter(): Router {
 		const isAdmin = req.user!.role === "admin" || req.user!.role === "owner";
 
 		if (!isSelf && !isAdmin) {
-			res.status(403).json({ code: "FORBIDDEN", message: "Cannot update other users" });
+			res
+				.status(403)
+				.json({ code: "FORBIDDEN", message: "Cannot update other users" });
 			return;
 		}
 
@@ -56,10 +63,14 @@ export function createUsersRouter(): Router {
 	});
 
 	/** DELETE /users/:id — delete a user (admin only). */
-	router.delete("/:id", requireRole("admin", "owner"), async (req: Request, res: Response) => {
-		await deleteUser(req.params.id);
-		res.status(204).end();
-	});
+	router.delete(
+		"/:id",
+		requireRole("admin", "owner"),
+		async (req: Request, res: Response) => {
+			await deleteUser(req.params.id);
+			res.status(204).end();
+		},
+	);
 
 	return router;
 }

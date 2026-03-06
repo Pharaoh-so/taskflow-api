@@ -5,12 +5,12 @@
 import { Router } from "express";
 import type { Request, Response } from "express";
 import { requireAuth } from "../middleware/authenticate.js";
-import { paginationSchema, createWebhookSchema } from "../shared/validators.js";
-import { ValidationError, AuthorizationError } from "../shared/errors.js";
 import { query } from "../shared/database.js";
-import { markNotificationRead, getUnreadCount } from "./dispatcher.js";
-import { createWebhookSubscription, deactivateWebhook } from "./webhooks.js";
+import { AuthorizationError, ValidationError } from "../shared/errors.js";
 import type { Notification } from "../shared/types.js";
+import { createWebhookSchema, paginationSchema } from "../shared/validators.js";
+import { getUnreadCount, markNotificationRead } from "./dispatcher.js";
+import { createWebhookSubscription, deactivateWebhook } from "./webhooks.js";
 
 /** Create the notifications router. */
 export function createNotificationsRouter(): Router {
